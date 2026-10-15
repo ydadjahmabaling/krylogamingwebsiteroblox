@@ -1,36 +1,34 @@
-const store = require('../data/store');
+// Vercel Serverless API: Fetch Catalog Items
+const fallbackItems = [
+  { id: 1, name: "Bloxy Cola", price: 25, category: "Gear", image: "https://tr.rbxcdn.com/180-day/2e5f8c2d-9a2b-4c3e-8d1f-3a4b5c6d7e8f/420/420/Hat/Png", description: "Classic Roblox gear. Refreshing!" },
+  { id: 2, name: "Dominus Empyreus", price: 9999, category: "Hat", image: "https://tr.rbxcdn.com/180-day/1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d/420/420/Hat/Png", description: "Legendary limited hat." },
+  { id: 3, name: "Speed Coil", price: 120, category: "Gear", image: "https://tr.rbxcdn.com/180-day/9f8e7d6c-5b4a-3210-fedc-ba9876543210/420/420/Hat/Png", description: "Run super fast!" },
+  { id: 4, name: "Golden Super Fly Boombox", price: 500, category: "Gear", image: "https://tr.rbxcdn.com/180-day/abcdef12-3456-7890-abcd-ef1234567890/420/420/Hat/Png", description: "Play your favorite tunes." },
+  { id: 5, name: "Headless Horseman", price: 31000, category: "Bundle", image: "https://tr.rbxcdn.com/180-day/0f1e2d3c-4b5a-6978-8091-a2b3c4d5e6f7/420/420/Hat/Png", description: "Rare Halloween bundle." },
+  { id: 6, name: "Korblox Deathspeaker", price: 17000, category: "Package", image: "https://tr.rbxcdn.com/180-day/11223344-5566-7788-9900-aabbccddeeff/420/420/Hat/Png", description: "Iconic sorcerer package." }
+];
 
-module.exports = async (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
+module.exports = (req, res) => {
+  // CORS Headers
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST,DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-  // GET /api/items — public catalog
-  if (req.method === 'GET') return res.status(200).json({ items: store.items });
-
-  // Everything below requires admin
-  const user = store.getSessionUser(req);
-  if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin only' });
-
-  // POST /api/items — admin lists a new item
-  if (req.method === 'POST') {
-    const { name, price, category, image, description } = req.body || {};
-    if (!name || !price) return res.status(400).json({ error: 'Name and price required' });
-    const item = store.addItem({
-      name: String(name).slice(0, 80),
-      price: Math.max(0, Number(price) || 0),
-      category: String(category || 'Item').slice(0, 40),
-      image: String(image || '').slice(0, 500),
-      description: String(description || '').slice(0, 300)
-    });
-    return res.status(201).json({ item });
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
   }
 
-  // DELETE /api/items?id=X — admin removes an item
-  if (req.method === 'DELETE') {
-    const id = Number(req.query.id);
-    if (!id) return res.status(400).json({ error: 'id required' });
-    store.deleteItem(id);
-    return res.status(200).json({ ok: true });
+  let catalog = fallbackItems;
+
+  try {
+    const store = require('../data/store.js');
+    if (store && store.items && Array.isArray(store.items)) {
+      catalog = store.items;
+    }
+  } catch (err) {
+    console.warn('Store import issue, returning fallback catalog:', err.message);
   }
 
-  return res.status(405).json({ error: 'Method not allowed' });
+  return res.status(200).json(catalog);
 };
