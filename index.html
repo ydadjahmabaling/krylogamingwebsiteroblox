@@ -13,6 +13,40 @@
     <p class="intro-line">go with <span id="glitch-word">gaming?</span></p>
     <div class="intro-sub">A marketplace built for players</div>
   </div>
+  <script>
+    // Keep the intro independent from app.js so a frontend error can never trap visitors here.
+    (() => {
+      const intro = document.getElementById('intro');
+      const word = document.getElementById('glitch-word');
+      if (!intro) return;
+      let alreadySeen = false;
+      try { alreadySeen = localStorage.getItem('kryloIntroSeen') === '1'; } catch (_) {}
+      let finished = false;
+      const finishIntro = () => {
+        if (finished) return;
+        finished = true;
+        intro.classList.add('done');
+        intro.setAttribute('aria-hidden', 'true');
+        try { localStorage.setItem('kryloIntroSeen', '1'); } catch (_) {}
+      };
+      if (alreadySeen || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+        finishIntro();
+      } else {
+        window.setTimeout(() => {
+          if (word) { word.classList.add('glitching'); word.textContent = 'KRYLO'; }
+        }, 650);
+        window.setTimeout(() => {
+          if (word) { word.classList.remove('glitching'); word.textContent = 'Krylo'; }
+        }, 1250);
+        window.setTimeout(finishIntro, 1900);
+      }
+      // Hard fail-safe even if other scripts or animations fail.
+      window.setTimeout(finishIntro, 2800);
+      window.addEventListener('pageshow', () => {
+        if (finished || alreadySeen) finishIntro();
+      }, { once: true });
+    })();
+  </script>
   <header class="topbar">
     <a class="brand" href="/"><img src="/logo.png" alt="Krylo logo"><span>KRYLO <b>MARKET</b></span></a>
     <nav><a href="#market">Market</a><a href="#how">How it works</a></nav>
