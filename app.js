@@ -7,7 +7,25 @@ function toast(msg){const el=$("toast");el.textContent=msg;el.classList.add("sho
 function openModal(id){$(id).classList.remove("hidden");document.body.style.overflow="hidden"}
 function closeModal(id){$(id).classList.add("hidden");if(!document.querySelector(".modal:not(.hidden)"))document.body.style.overflow=""}
 document.querySelectorAll("[data-close]").forEach(el=>el.addEventListener("click",()=>closeModal(el.dataset.close)));
-function intro(){const el=$("intro");if(localStorage.getItem("kryloIntroSeen")==="1"){el.classList.add("done");return}const word=$("glitch-word");setTimeout(()=>{word.classList.add("glitching");word.textContent="KRYLO";},950);setTimeout(()=>{word.classList.remove("glitching");word.textContent="Krylo";},1650);setTimeout(()=>{el.classList.add("done");localStorage.setItem("kryloIntroSeen","1")},2350)}
+function intro(){
+  const el=$("intro"), word=$("glitch-word");
+  if(!el || !word) return;
+  let seen=false;
+  try { seen=localStorage.getItem("kryloIntroSeen")==="1"; } catch (_) { /* Storage may be disabled; intro still must finish. */ }
+  const finish=()=>{
+    el.classList.add("done");
+    el.setAttribute("aria-hidden","true");
+    try { localStorage.setItem("kryloIntroSeen","1"); } catch (_) {}
+  };
+  if(seen){ finish(); return; }
+  if(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches){ finish(); return; }
+  const timers=[];
+  timers.push(setTimeout(()=>{word.classList.add("glitching");word.textContent="KRYLO";},850));
+  timers.push(setTimeout(()=>{word.classList.remove("glitching");word.textContent="Krylo";},1500));
+  timers.push(setTimeout(finish,2300));
+  // Fail-safe: never let the intro permanently cover the marketplace.
+  timers.push(setTimeout(finish,4000));
+}
 function setUser(user){currentUser=user;$("login-open").classList.toggle("hidden",!!user);$("signup-open").classList.toggle("hidden",!!user);$("logout-btn").classList.toggle("hidden",!user);$("user-label").textContent=user?(user.email||"Signed in"):"";$("hero-sell").textContent=user?"List an item":"Start selling"}
 async function token(){if(!supabase)return null;const {data}=await supabase.auth.getSession();return data?.session?.access_token||null}
 async function api(path,options={}){const t=await token();const headers={"Content-Type":"application/json",...(options.headers||{})};if(t)headers.Authorization=`Bearer ${t}`;const res=await fetch(`/api/${path}`,{...options,headers});const body=await res.json().catch(()=>({error:"Unexpected server response"}));if(!res.ok)throw new Error(body.error||"Request failed");return body}
