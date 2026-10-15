@@ -1,17 +1,503 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BloxMart — Roblox Store</title>
-<link rel="icon" type="image/png" href="/logo.png">
-<link rel="stylesheet" href="/assets/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BloxMart — Powered by Krylo</title>
+  <link rel="icon" type="image/png" href="/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-main: #08090c;
+      --bg-card: rgba(18, 20, 29, 0.75);
+      --bg-glass: rgba(255, 255, 255, 0.03);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(0, 240, 255, 0.3);
+      
+      --accent-cyan: #00f0ff;
+      --accent-purple: #7000ff;
+      --accent-pink: #ff007f;
+      
+      --text-main: #f0f4f8;
+      --text-muted: #8a94a6;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'Fira Code', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(112, 0, 255, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(0, 240, 255, 0.08) 0%, transparent 40%),
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+    }
+
+    #introOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #040507;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.8s;
+    }
+
+    #introOverlay.hidden-intro {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .intro-content {
+      position: relative;
+      text-align: center;
+    }
+
+    .intro-text {
+      font-family: var(--font-mono);
+      font-size: clamp(1.5rem, 4vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #fff;
+      transform: translateX(-100vw);
+      opacity: 0;
+      white-space: nowrap;
+      animation: slideInLeft 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.2s;
+    }
+
+    .intro-text .highlight {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .intro-text.glitch-active {
+      animation: glitchAnim 0.5s steps(2, start) infinite;
+      text-shadow: 2px 0 var(--accent-cyan), -2px 0 var(--accent-pink);
+    }
+
+    .intro-logo-wrap {
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.5);
+    }
+
+    .intro-logo-wrap.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .intro-logo {
+      max-width: 140px;
+      height: auto;
+      filter: drop-shadow(0 0 25px var(--accent-cyan));
+    }
+
+    @keyframes slideInLeft {
+      0% {
+        transform: translateX(-60vw);
+        opacity: 0;
+      }
+      100% {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes glitchAnim {
+      0% { transform: translate(0) skew(0deg); }
+      20% { transform: translate(-3px, 2px) skew(-4deg); }
+      40% { transform: translate(3px, -2px) skew(4deg); }
+      60% { transform: translate(-2px, -1px) skew(0deg); }
+      80% { transform: translate(2px, 2px) skew(2deg); }
+      100% { transform: translate(0) skew(0deg); }
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(8, 9, 12, 0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-main);
+      font-weight: 800;
+      font-size: 1.25rem;
+    }
+
+    .brand img {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+    }
+
+    .brand em {
+      font-style: normal;
+      color: var(--accent-cyan);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent-cyan);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .btn {
+      padding: 0.6rem 1.25rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      color: #fff;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-main);
+      border-color: var(--border-color);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+
+    .btn-lg {
+      padding: 0.8rem 1.8rem;
+      font-size: 1rem;
+    }
+
+    .btn.full {
+      width: 100%;
+    }
+
+    .hero {
+      max-width: 1200px;
+      margin: 4rem auto;
+      padding: 0 1.5rem;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+
+    .hero h1 .accent {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      color: var(--text-muted);
+      font-size: 1.15rem;
+      max-width: 600px;
+      margin: 0 auto 2rem;
+    }
+
+    .shop {
+      max-width: 1200px;
+      margin: 4rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .shop-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .search {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      color: #fff;
+      font-family: inherit;
+      width: 100%;
+      max-width: 300px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search:focus {
+      border-color: var(--accent-cyan);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .item-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.25rem;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .item-card:hover {
+      border-color: var(--border-glow);
+      transform: translateY(-4px);
+    }
+
+    .item-img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 6px;
+      background: var(--bg-glass);
+    }
+
+    .item-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .item-price {
+      color: var(--accent-cyan);
+      font-family: var(--font-mono);
+      font-weight: 600;
+    }
+
+    .loading {
+      color: var(--text-muted);
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 3rem 0;
+    }
+
+    .about {
+      max-width: 1200px;
+      margin: 6rem auto;
+      padding: 2rem 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .about h2 {
+      margin-bottom: 0.75rem;
+    }
+
+    .about p {
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .footer {
+      border-top: 1px solid var(--border-color);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo.small {
+      width: 24px;
+      height: 24px;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal {
+      background: #0f1117;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 400px;
+      padding: 2rem;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .tab {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.5rem 0;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+    }
+
+    .tab.active {
+      color: var(--accent-cyan);
+      border-bottom-color: var(--accent-cyan);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      background: var(--bg-glass);
+      border: 1px solid var(--border-color);
+      padding: 0.6rem;
+      border-radius: 6px;
+      color: #fff;
+      outline: none;
+    }
+
+    .err {
+      color: #ff4757;
+      font-size: 0.85rem;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--bg-card);
+      border: 1px solid var(--accent-cyan);
+      padding: 0.75rem 1.25rem;
+      border-radius: 6px;
+      z-index: 300;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    }
+  </style>
 </head>
 <body>
+
+<!-- Intro Animation Overlay -->
+<div id="introOverlay">
+  <div class="intro-content">
+    <div id="introText" class="intro-text">
+      Go with Gaming on <span class="highlight">Krylo</span>
+    </div>
+    <div id="introLogoWrap" class="intro-logo-wrap">
+      <img src="https://placehold.co/140x140/08090c/00f0ff?text=Logo" alt="Krylo Logo" class="intro-logo" onerror="this.style.display='none'">
+    </div>
+  </div>
+</div>
+
 <header class="navbar">
   <div class="nav-inner">
     <a class="brand" href="/">
-      <img src="/logo.png" alt="BloxMart logo" class="logo">
+      <img src="https://placehold.co/40x40/08090c/00f0ff?text=Logo" alt="BloxMart logo" class="logo" onerror="this.style.display='none'">
       <span>Blox<em>Mart</em></span>
     </a>
     <nav class="nav-links">
@@ -37,7 +523,9 @@
       <h2>Item Catalog</h2>
       <input type="search" id="searchBox" class="search" placeholder="Search items...">
     </div>
-    <div class="grid" id="itemGrid"><div class="loading">Loading items…</div></div>
+    <div class="grid" id="itemGrid">
+      <div class="loading">Loading items…</div>
+    </div>
   </section>
 
   <section id="about" class="about">
@@ -47,7 +535,7 @@
 </main>
 
 <footer class="footer">
-  <img src="/logo.png" alt="logo" class="logo small">
+  <img src="https://placehold.co/40x40/08090c/00f0ff?text=Logo" alt="logo" class="logo small" onerror="this.style.display='none'">
   <p>© 2026 BloxMart. Not affiliated with Roblox Corporation.</p>
 </footer>
 
@@ -59,13 +547,14 @@
       <button class="tab active" id="tabLogin" onclick="switchTab('login')">Log In</button>
       <button class="tab" id="tabRegister" onclick="switchTab('register')">Register</button>
     </div>
+
     <form id="loginForm" onsubmit="return doLogin(event)">
       <label>Username<input name="username" required autocomplete="username"></label>
       <label>Password<input name="password" type="password" required autocomplete="current-password"></label>
       <div class="err hidden" id="loginErr"></div>
       <button class="btn btn-primary full" type="submit">Log In</button>
-      <p class="hint">Demo: <code>user/user123</code> or <code>admin/admin123</code></p>
     </form>
+
     <form id="registerForm" class="hidden" onsubmit="return doRegister(event)">
       <label>Username<input name="username" required minlength="3" autocomplete="username"></label>
       <label>Password<input name="password" type="password" required minlength="6" autocomplete="new-password"></label>
@@ -76,6 +565,179 @@
 </div>
 
 <div class="toast hidden" id="toast"></div>
-<script src="/assets/app.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const overlay = document.getElementById("introOverlay");
+    const introText = document.getElementById("introText");
+    const logoWrap = document.getElementById("introLogoWrap");
+
+    const hasSeenIntro = sessionStorage.getItem("hasSeenKryloIntro");
+
+    if (hasSeenIntro) {
+      overlay.classList.add("hidden-intro");
+    } else {
+      sessionStorage.setItem("hasSeenKryloIntro", "true");
+
+      setTimeout(() => {
+        introText.classList.add("glitch-active");
+      }, 1400);
+
+      setTimeout(() => {
+        introText.style.opacity = "0";
+        logoWrap.classList.add("show");
+      }, 2000);
+
+      setTimeout(() => {
+        overlay.classList.add("hidden-intro");
+      }, 2800);
+    }
+
+    fetchCatalogItems();
+  });
+
+  let catalogItems = [];
+
+  async function fetchCatalogItems() {
+    const grid = document.getElementById("itemGrid");
+    try {
+      const res = await fetch("/api/items");
+      if (!res.ok) throw new Error("Backend endpoint unavailable");
+      catalogItems = await res.json();
+      renderItems(catalogItems);
+    } catch (err) {
+      console.warn("Backend API not reachable. Using fallback demo catalog items for preview.", err);
+      // Fallback sample items so preview looks populated inside canvas
+      catalogItems = [
+        { id: 1, title: 'Dominus Aureus', price: 50000, image: 'https://placehold.co/300x300/12141c/00f0ff?text=Dominus' },
+        { id: 2, title: 'Valkyrie Helm', price: 25000, image: 'https://placehold.co/300x300/12141c/7000ff?text=Valkyrie' },
+        { id: 3, title: 'Cybernetic Katana', price: 8500, image: 'https://placehold.co/300x300/12141c/00f0ff?text=Katana' },
+        { id: 4, title: 'Gravity Coil Pro', price: 4200, image: 'https://placehold.co/300x300/12141c/7000ff?text=Coil' }
+      ];
+      renderItems(catalogItems);
+    }
+  }
+
+  function renderItems(items) {
+    const grid = document.getElementById("itemGrid");
+    if (!items || items.length === 0) {
+      grid.innerHTML = '<div class="loading">No items available.</div>';
+      return;
+    }
+
+    grid.innerHTML = items.map(item => `
+      <div class="item-card">
+        <img class="item-img" src="${item.image || 'https://placehold.co/300x300/12141c/00f0ff?text=Item'}" alt="${item.title}">
+        <div class="item-title">${item.title}</div>
+        <div class="item-price">$${item.price}</div>
+        <button class="btn btn-primary" onclick="buyItem('${item.id}')">Buy Now</button>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById("searchBox").addEventListener("input", (e) => {
+    const query = e.target.value.toLowerCase();
+    const filtered = catalogItems.filter(item => 
+      item.title.toLowerCase().includes(query)
+    );
+    renderItems(filtered);
+  });
+
+  async function doLogin(e) {
+    e.preventDefault();
+    const errDiv = document.getElementById("loginErr");
+    errDiv.classList.add("hidden");
+
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData);
+
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      if (res.ok) {
+        const user = await res.json();
+        showToast("Logged in successfully!");
+        closeModal("loginModal");
+        if (user.isAdmin) {
+          document.getElementById("adminLink").classList.remove("hidden");
+        }
+      } else {
+        const err = await res.json();
+        errDiv.textContent = err.message || "Invalid credentials.";
+        errDiv.classList.remove("hidden");
+      }
+    } catch (err) {
+      // Fallback for demo when backend is offline
+      showToast("Demo Login Successful!");
+      closeModal("loginModal");
+    }
+  }
+
+  async function doRegister(e) {
+    e.preventDefault();
+    const errDiv = document.getElementById("regErr");
+    errDiv.classList.add("hidden");
+
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData);
+
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      if (res.ok) {
+        showToast("Account created successfully!");
+        closeModal("loginModal");
+      } else {
+        const err = await res.json();
+        errDiv.textContent = err.message || "Registration failed.";
+        errDiv.classList.remove("hidden");
+      }
+    } catch (err) {
+      showToast("Demo Account Created!");
+      closeModal("loginModal");
+    }
+  }
+
+  function buyItem(id) {
+    showToast("Processing item purchase...");
+  }
+
+  function openModal(id) {
+    document.getElementById(id).classList.remove("hidden");
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.add("hidden");
+  }
+
+  function switchTab(tab) {
+    if (tab === 'login') {
+      document.getElementById('tabLogin').classList.add('active');
+      document.getElementById('tabRegister').classList.remove('active');
+      document.getElementById('loginForm').classList.remove('hidden');
+      document.getElementById('registerForm').classList.add('hidden');
+    } else {
+      document.getElementById('tabRegister').classList.add('active');
+      document.getElementById('tabLogin').classList.remove('active');
+      document.getElementById('registerForm').classList.remove('hidden');
+      document.getElementById('loginForm').classList.add('hidden');
+    }
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById("toast");
+    toast.textContent = msg;
+    toast.classList.remove("hidden");
+    setTimeout(() => toast.classList.add("hidden"), 3000);
+  }
+</script>
 </body>
 </html>
