@@ -1,0 +1,9 @@
+{
+  "name": "bloxmart-roblox-store",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Roblox store with login, admin item listing, built for Vercel serverless",
+  "dependencies": {
+    "bcryptjs": "^2.4.3"
+  }
+}

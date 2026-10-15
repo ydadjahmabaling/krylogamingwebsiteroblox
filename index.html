@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BloxMart — Roblox Store</title>
+<link rel="icon" type="image/png" href="/logo.png">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="navbar">
+  <div class="nav-inner">
+    <a class="brand" href="/">
+      <img src="/logo.png" alt="BloxMart logo" class="logo">
+      <span>Blox<em>Mart</em></span>
+    </a>
+    <nav class="nav-links">
+      <a href="#shop">Shop</a>
+      <a href="#about">About</a>
+      <a href="/admin.html" id="adminLink" class="hidden">Admin</a>
+    </nav>
+    <div class="auth-area" id="authArea">
+      <button class="btn btn-ghost" onclick="openModal('loginModal')">Log In</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>Gear up. <span class="accent">Dominate.</span></h1>
+    <p>The best Roblox items, hats, and gears — all in one store.</p>
+    <a class="btn btn-primary btn-lg" href="#shop">Browse Items</a>
+  </section>
+
+  <section id="shop" class="shop">
+    <div class="shop-head">
+      <h2>Item Catalog</h2>
+      <input type="search" id="searchBox" class="search" placeholder="Search items...">
+    </div>
+    <div class="grid" id="itemGrid"><div class="loading">Loading items…</div></div>
+  </section>
+
+  <section id="about" class="about">
+    <h2>About BloxMart</h2>
+    <p>BloxMart is a community-run Roblox store. Log in to track your purchases, or log in as admin to list new items.</p>
+  </section>
+</main>
+
+<footer class="footer">
+  <img src="/logo.png" alt="logo" class="logo small">
+  <p>© 2026 BloxMart. Not affiliated with Roblox Corporation.</p>
+</footer>
+
+<!-- Login / Register Modal -->
+<div class="modal-backdrop hidden" id="loginModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('loginModal')">×</button>
+    <div class="tabs">
+      <button class="tab active" id="tabLogin" onclick="switchTab('login')">Log In</button>
+      <button class="tab" id="tabRegister" onclick="switchTab('register')">Register</button>
+    </div>
+    <form id="loginForm" onsubmit="return doLogin(event)">
+      <label>Username<input name="username" required autocomplete="username"></label>
+      <label>Password<input name="password" type="password" required autocomplete="current-password"></label>
+      <div class="err hidden" id="loginErr"></div>
+      <button class="btn btn-primary full" type="submit">Log In</button>
+      <p class="hint">Demo: <code>user/user123</code> or <code>admin/admin123</code></p>
+    </form>
+    <form id="registerForm" class="hidden" onsubmit="return doRegister(event)">
+      <label>Username<input name="username" required minlength="3" autocomplete="username"></label>
+      <label>Password<input name="password" type="password" required minlength="6" autocomplete="new-password"></label>
+      <div class="err hidden" id="regErr"></div>
+      <button class="btn btn-primary full" type="submit">Create Account</button>
+    </form>
+  </div>
+</div>
+
+<div class="toast hidden" id="toast"></div>
+<script src="/assets/app.js"></script>
+</body>
+</html>

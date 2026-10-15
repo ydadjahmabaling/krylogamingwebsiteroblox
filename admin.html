@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — BloxMart</title>
+<link rel="icon" type="image/png" href="/logo.png">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="navbar">
+  <div class="nav-inner">
+    <a class="brand" href="/">
+      <img src="/logo.png" alt="BloxMart logo" class="logo">
+      <span>Blox<em>Mart</em> <span class="badge">Admin</span></span>
+    </a>
+    <nav class="nav-links">
+      <a href="/">← Back to Store</a>
+    </nav>
+    <div class="auth-area" id="authArea"></div>
+  </div>
+</header>
+
+<main class="admin-main">
+  <section class="panel" id="gate">
+    <h2>Admin Access</h2>
+    <p>Log in with an admin account to manage the catalog.</p>
+    <button class="btn btn-primary" onclick="openModal('loginModal')">Admin Login</button>
+  </section>
+
+  <div id="adminPanel" class="hidden">
+    <div class="admin-cols">
+      <section class="panel">
+        <h2>List New Item</h2>
+        <form onsubmit="return addItem(event)" id="addItemForm">
+          <label>Item Name<input name="name" required maxlength="80"></label>
+          <label>Price (Robux)<input name="price" type="number" min="0" required></label>
+          <label>Category<input name="category" maxlength="40" placeholder="Hat / Gear / Bundle…"></label>
+          <label>Image URL<input name="image" type="url" placeholder="https://…"></label>
+          <label>Description<textarea name="description" rows="3" maxlength="300"></textarea></label>
+          <div class="err hidden" id="itemErr"></div>
+          <button class="btn btn-primary full" type="submit">Add Item</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>Current Catalog</h2>
+        <table class="table">
+          <thead><tr><th>ID</th><th>Name</th><th>Price</th><th>Category</th><th></th></tr></thead>
+          <tbody id="adminItems"></tbody>
+        </table>
+      </section>
+    </div>
+  </div>
+</main>
+
+<!-- Shared login modal -->
+<div class="modal-backdrop hidden" id="loginModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('loginModal')">×</button>
+    <h2>Admin Login</h2>
+    <form id="loginForm" onsubmit="return doLogin(event)">
+      <label>Username<input name="username" required></label>
+      <label>Password<input name="password" type="password" required></label>
+      <div class="err hidden" id="loginErr"></div>
+      <button class="btn btn-primary full" type="submit">Log In</button>
+      <p class="hint">Demo admin: <code>admin/admin123</code></p>
+    </form>
+  </div>
+</div>
+
+<div class="toast hidden" id="toast"></div>
+<script src="/assets/app.js"></script>
+<script src="/assets/admin.js"></script>
+</body>
+</html>
