@@ -1,0 +1,8 @@
+{
+  "name": "krylo-market",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Krylo Market — Vercel-ready gaming marketplace starter",
+  "engines": { "node": ">=20" },
+  "dependencies": { "@supabase/supabase-js": "^2.57.0" }
+}

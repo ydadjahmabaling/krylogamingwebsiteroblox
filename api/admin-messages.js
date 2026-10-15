@@ -1,0 +1,2 @@
+const {send,userFromRequest,handleError,method}=require("./_lib");
+module.exports=async function handler(req,res){if(!method(req,res,["GET"]))return;try{const {client}=await userFromRequest(req,true);const {data,error}=await client.from("messages").select("id,listing_id,sender_id,recipient_id,sender_email,body,created_at").order("created_at",{ascending:false}).limit(300);if(error)throw error;return send(res,200,{messages:data||[]})}catch(e){return handleError(res,e)}};

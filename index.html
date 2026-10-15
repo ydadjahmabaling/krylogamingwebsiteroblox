@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#080b12"><title>Krylo Market — Gaming Marketplace</title>
+  <link rel="icon" href="/logo.png">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div id="intro" class="intro" aria-hidden="true">
+    <div class="intro-mark"><img src="/logo.png" alt=""></div>
+    <p class="intro-line">go with <span id="glitch-word">gaming?</span></p>
+    <div class="intro-sub">A marketplace built for players</div>
+  </div>
+  <header class="topbar">
+    <a class="brand" href="/"><img src="/logo.png" alt="Krylo logo"><span>KRYLO <b>MARKET</b></span></a>
+    <nav><a href="#market">Market</a><a href="#how">How it works</a></nav>
+    <div class="top-actions"><span id="user-label" class="user-label"></span><button id="login-open" class="btn btn-quiet">Sign in</button><button id="signup-open" class="btn btn-primary">Create account</button><button id="logout-btn" class="btn btn-quiet hidden">Log out</button></div>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="hero-copy"><div class="eyebrow"><span class="live-dot"></span> PLAYER-TO-PLAYER MARKETPLACE</div>
+        <h1>Your next<br><span>gaming upgrade.</span></h1>
+        <p>Discover digital goods, gaming services, and player-listed finds. Browse in USD, contact sellers, and make your next move.</p>
+        <div class="hero-buttons"><a class="btn btn-primary" href="#market">Explore listings <span>↗</span></a><button id="hero-sell" class="btn btn-outline">List an item</button></div>
+        <div class="trust-row"><div><strong>USD</strong><small>Clear pricing</small></div><i></i><div><strong>Player-led</strong><small>Direct contact</small></div><i></i><div><strong>Secure access</strong><small>Account protected</small></div></div>
+      </div>
+      <div class="hero-art"><div class="orb orb-a"></div><div class="orb orb-b"></div><div class="art-card back-card"><span class="card-tag">KRYLO / MARKET</span><div class="mock-lines"><i></i><i></i><i></i></div></div><div class="art-card front-card"><div class="card-top"><span class="tiny-logo">K</span><span class="status">FEATURED</span></div><div class="cube">✦</div><div class="featured-label">THE PLAYER ECONOMY</div><div class="featured-title">Level up your loadout.</div><div class="featured-bottom"><span>Discover something new</span><b>↗</b></div></div><div class="float-chip chip-one">✦ Curated finds</div><div class="float-chip chip-two"><span class="live-dot"></span> Made for gamers</div></div>
+    </section>
+    <section id="market" class="market-section">
+      <div class="section-head"><div><div class="eyebrow">THE MARKETPLACE</div><h2>Fresh listings<span>.</span></h2><p>Find your next favorite. Message sellers directly to discuss a listing.</p></div><button id="market-sell" class="btn btn-outline">＋ List an item</button></div>
+      <div class="market-tools"><label class="searchbox"><span>⌕</span><input id="search" placeholder="Search listings..." autocomplete="off"></label><select id="category-filter"><option value="">All categories</option><option>Game Items</option><option>Accounts</option><option>Services</option><option>Collectibles</option><option>Other</option></select><select id="sort"><option value="new">Newest first</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option></select></div>
+      <div id="listing-grid" class="listing-grid"><div class="loading-card">Loading the marketplace<span>...</span></div></div>
+      <div id="empty-state" class="empty-state hidden"><div class="empty-icon">⌕</div><h3>No listings found</h3><p>Try another search or be the first to list something.</p><button class="btn btn-primary" id="empty-sell">List an item</button></div>
+    </section>
+    <section id="how" class="how-section"><div class="how-intro"><div class="eyebrow">SIMPLE BY DESIGN</div><h2>Find it. Ask.<br><span>Make it yours.</span></h2></div><div class="how-steps"><article><span>01</span><h3>Explore listings</h3><p>Browse player-posted items with upfront USD pricing and clear descriptions.</p></article><article><span>02</span><h3>Contact the seller</h3><p>Sign in and start a message thread to ask questions or discuss the offer.</p></article><article><span>03</span><h3>Agree safely</h3><p>Confirm details before paying. Krylo Market does not process payments in this starter build.</p></article></div></section>
+    <section class="seller-banner"><div><div class="eyebrow">GOT SOMETHING TO OFFER?</div><h2>Your listing could be<br>someone's next favorite.</h2></div><button id="banner-sell" class="btn btn-light">Start selling <span>↗</span></button><div class="banner-glow"></div></section>
+  </main>
+  <footer><a class="brand footer-brand" href="#"><img src="/logo.png" alt=""><span>KRYLO <b>MARKET</b></span></a><p>Player-to-player listings. Prices shown in USD.</p><span>© <span id="year"></span> Krylo Market</span></footer>
+
+  <div id="auth-modal" class="modal hidden"><div class="modal-backdrop" data-close="auth-modal"></div><section class="modal-panel"><button class="modal-x" data-close="auth-modal">×</button><div class="modal-brand"><img src="/logo.png" alt=""><span>KRYLO MARKET</span></div><div class="eyebrow">WELCOME TO THE MARKET</div><h2 id="auth-title">Sign in</h2><p id="auth-subtitle">Pick up where your next adventure begins.</p><form id="auth-form"><label>Email<input id="auth-email" type="email" required autocomplete="email" placeholder="you@example.com"></label><label>Password<input id="auth-password" type="password" minlength="8" required autocomplete="current-password" placeholder="At least 8 characters"></label><div id="auth-error" class="form-error"></div><button class="btn btn-primary full" id="auth-submit">Sign in</button></form><p class="switch-auth"><span id="switch-copy">New to Krylo?</span> <button id="switch-auth" class="text-button">Create account</button></p></section></div>
+
+  <div id="listing-modal" class="modal hidden"><div class="modal-backdrop" data-close="listing-modal"></div><section class="modal-panel wide-panel"><button class="modal-x" data-close="listing-modal">×</button><div class="eyebrow">SELLER STUDIO</div><h2>List an item</h2><p>Share the details clearly so buyers know what they're contacting you about.</p><form id="listing-form" class="form-grid"><label>Item title<input id="item-title" maxlength="90" required placeholder="e.g. Custom gaming service"></label><label>Price (USD)<div class="price-input"><span>$</span><input id="item-price" type="number" min="0.01" max="999999" step="0.01" required placeholder="25.00"></div></label><label>Category<select id="item-category"><option>Game Items</option><option>Accounts</option><option>Services</option><option>Collectibles</option><option>Other</option></select></label><label>Image URL (optional)<input id="item-image" type="url" placeholder="https://..."></label><label class="full-span">Description<textarea id="item-description" rows="4" maxlength="1500" required placeholder="Describe the item, condition, delivery, and anything a buyer should know."></textarea></label><div class="full-span form-error" id="listing-error"></div><button class="btn btn-primary full-span" type="submit">Publish listing</button></form></section></div>
+
+  <div id="message-modal" class="modal hidden"><div class="modal-backdrop" data-close="message-modal"></div><section class="modal-panel wide-panel message-panel"><button class="modal-x" data-close="message-modal">×</button><div class="eyebrow">DIRECT CONTACT</div><h2 id="message-title">Message seller</h2><p id="message-meta"></p><div id="message-login-note" class="notice hidden">Sign in to start a conversation with this seller.</div><div id="message-thread" class="message-thread"></div><form id="message-form" class="message-compose"><textarea id="message-text" rows="2" maxlength="1200" placeholder="Ask a question about this listing..." required></textarea><button class="btn btn-primary" type="submit">Send ↗</button></form><div id="message-error" class="form-error"></div></section></div>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="/app.js"></script>
+</body></html>

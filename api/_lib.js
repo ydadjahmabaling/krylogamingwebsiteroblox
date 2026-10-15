@@ -1,0 +1,7 @@
+const { createClient } = require("@supabase/supabase-js");
+function db(){const url=process.env.SUPABASE_URL,key=process.env.SUPABASE_SERVICE_ROLE_KEY;if(!url||!key)throw new Error("Server database is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.");return createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}})}
+function send(res,status,body){return res.status(status).json(body)}
+async function userFromRequest(req,admin=false){const header=req.headers.authorization||"";const token=header.startsWith("Bearer ")?header.slice(7):"";if(!token)throw Object.assign(new Error("Please sign in first."),{status:401});const client=db();const {data,error}=await client.auth.getUser(token);if(error||!data.user)throw Object.assign(new Error("Your session is invalid or expired."),{status:401});const user=data.user;if(admin){const emails=(process.env.ADMIN_EMAILS||"").split(",").map(s=>s.trim().toLowerCase()).filter(Boolean);if(!emails.includes((user.email||"").toLowerCase()))throw Object.assign(new Error("Admin access is restricted."),{status:403})}return {client,user}}
+function handleError(res,error){return send(res,error.status||500,{error:error.message||"Server error"})}
+function method(req,res,allowed){if(!allowed.includes(req.method)) {res.setHeader("Allow",allowed.join(", "));send(res,405,{error:"Method not allowed"});return false}return true}
+module.exports={db,send,userFromRequest,handleError,method};
